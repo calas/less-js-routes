@@ -46,7 +46,7 @@ function less_json_eval(json){return eval('(' +  json + ')');}
 
 function less_get_params(obj){
   #{'console.log("less_get_params(" + obj + ")");' if @@debug}
-  if (typeof(jQuery) == undefined) { return obj; }
+  if (typeof(jQuery) != "undefined") { return obj; }
   return less_to_querystring(obj, '');
 }
 
@@ -75,7 +75,7 @@ function less_ajax(url, verb, params, options){
   #{'console.log("less_ajax(" + url + ", " + verb + ", " + params +", " + options + ")");' if @@debug}
   if (verb == undefined) {verb = 'get';}
   var res;
-  if (typeof(jQuery) == undefined){
+  if (typeof(jQuery) != "undefined"){
     v = verb.toLowerCase() == 'get' ? 'GET' : 'POST';
     p = less_get_params(params);
     if (verb.toLowerCase() == 'put' || verb.toLowerCase() == 'delete') {
@@ -97,7 +97,7 @@ function less_ajax(url, verb, params, options){
 function less_ajaxx(url, verb, params, options){
   #{'console.log("less_ajax(" + url + ", " + verb + ", " + params +", " + options + ")");' if @@debug}
   if (verb == undefined) {verb = 'get';}
-  if (typeof(jQuery) == undefined){
+  if (typeof(jQuery) != "undefined"){
     v = verb.toLowerCase() == 'get' ? 'GET' : 'POST';
     p = less_get_params(params);
     if (verb.toLowerCase() == 'put' || verb.toLowerCase() == 'delete') {
