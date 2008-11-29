@@ -3,8 +3,8 @@ require 'less'
 module Less
   class JsRoutes
     class << self
-      
-      
+
+
       @@debug = false
 
 
@@ -25,7 +25,7 @@ module Less
           seg = segs[i]
           break if i == segs.size-1 && seg.is_a?(ActionController::Routing::DividerSegment)
           if seg.is_a?(ActionController::Routing::DividerSegment) || seg.is_a?(ActionController::Routing::StaticSegment)
-            s << seg.instance_variable_get(:@value) 
+            s << seg.instance_variable_get(:@value)
           elsif seg.is_a?(ActionController::Routing::DynamicSegment)
             s << "' + #{seg.key.to_s.gsub(':', '')} + '"
           end
@@ -42,75 +42,75 @@ module Less
 
       def get_js_helpers
         <<-JS
-function less_json_eval(json){return eval('(' +  json + ')')}  
+function less_json_eval(json){return eval('(' +  json + ')');}
 
 function less_get_params(obj){
-  #{'console.log("less_get_params(" + obj + ")");' if @@debug} 
-  if (jQuery) { return obj }
+  #{'console.log("less_get_params(" + obj + ")");' if @@debug}
+  if (typeof(jQuery) == undefined) { return obj; }
   return less_to_querystring(obj, '');
 }
 
 function less_to_querystring(obj, prefix) {
-  #{'console.log("less_to_querystring(" + obj + ")");' if @@debug} 
-  if (obj == null) {return '';}
+  #{'console.log("less_to_querystring(" + obj + ")");' if @@debug}
+  if (obj === null) {return '';}
   if (typeof(obj) == 'string') {return prefix + obj;}
   var s = [];
   for (prop in obj){
     s.push(prop + "=" + obj[prop]);
   }
-  if (s.length == 0) {return '';}
+  if (s.length === 0) {return '';}
   return prefix + s.join('&') + '';
 }
 
 function less_merge_objects(a, b){
-  #{'console.log("less_merge_objects(" + a + ", " + b + ")");' if @@debug} 
-  if (b == null) {return a;}
+  #{'console.log("less_merge_objects(" + a + ", " + b + ")");' if @@debug}
+  if (b === null) {return a;}
   z = new Object;
-  for (prop in a){z[prop] = a[prop]}
-  for (prop in b){z[prop] = b[prop]}
+  for (prop in a){z[prop] = a[prop];}
+  for (prop in b){z[prop] = b[prop];}
   return z;
 }
 
 function less_ajax(url, verb, params, options){
-  #{'console.log("less_ajax(" + url + ", " + verb + ", " + params +", " + options + ")");' if @@debug} 
+  #{'console.log("less_ajax(" + url + ", " + verb + ", " + params +", " + options + ")");' if @@debug}
   if (verb == undefined) {verb = 'get';}
   var res;
-  if (jQuery){
-    v = verb.toLowerCase() == 'get' ? 'GET' : 'POST'
+  if (typeof(jQuery) == undefined){
+    v = verb.toLowerCase() == 'get' ? 'GET' : 'POST';
     p = less_get_params(params);
     if (verb.toLowerCase() == 'put' || verb.toLowerCase() == 'delete') {
       if (typeof(p) == 'string') {
         p = ['_method=' + verb.toLowerCase(), p].join('&');
       } else {
-        p = less_merge_objects({'_method': verb.toLowerCase()}, p)
+        p = less_merge_objects({'_method': verb.toLowerCase()}, p);
       }
     }
-    #{'console.log("less_merge_objects:v : " + v);' if @@debug} 
-    #{'console.log("less_merge_objects:p : " + p);' if @@debug} 
+    #{'console.log("less_merge_objects:v : " + v);' if @@debug}
+    #{'console.log("less_merge_objects:p : " + p);' if @@debug}
     res = jQuery.ajax(less_merge_objects({async:false, url: url, type: v, data: p}, options)).responseText;
-  } else {  
+  } else {
     new Ajax.Request(url, less_merge_objects({asynchronous: false, method: verb, parameters: less_get_params(params), onComplete: function(r){res = r.responseText;}}, options));
   }
   if (url.indexOf('.json') == url.length-5){ return less_json_eval(res);}
   else {return res;}
 }
 function less_ajaxx(url, verb, params, options){
-  #{'console.log("less_ajax(" + url + ", " + verb + ", " + params +", " + options + ")");' if @@debug} 
+  #{'console.log("less_ajax(" + url + ", " + verb + ", " + params +", " + options + ")");' if @@debug}
   if (verb == undefined) {verb = 'get';}
-  if (jQuery){
-    v = verb.toLowerCase() == 'get' ? 'GET' : 'POST'
+  if (typeof(jQuery) == undefined){
+    v = verb.toLowerCase() == 'get' ? 'GET' : 'POST';
     p = less_get_params(params);
     if (verb.toLowerCase() == 'put' || verb.toLowerCase() == 'delete') {
       if (typeof(p) == 'string') {
         p = ['_method=' + verb.toLowerCase(), p].join('&');
       } else {
-        p = less_merge_objects({'_method': verb.toLowerCase()}, p)
+        p = less_merge_objects({'_method': verb.toLowerCase()}, p);
       }
     }
-    #{'console.log("less_merge_objects:v : " + v);' if @@debug} 
-    #{'console.log("less_merge_objects:p : " + p);' if @@debug} 
-    jQuery.ajax(less_merge_objects({ url: url, type: v, data: p, complete: function(r){eval(r.responseText)}}, options));
-  } else {  
+    #{'console.log("less_merge_objects:v : " + v);' if @@debug}
+    #{'console.log("less_merge_objects:p : " + p);' if @@debug}
+    jQuery.ajax(less_merge_objects({ url: url, type: v, data: p, complete: function(r){eval(r.responseText);}}, options));
+  } else {
     new Ajax.Request(url, less_merge_objects({method: verb, parameters: less_get_params(params), onComplete: function(r){eval(r.responseText);}}, options));
   }
 }
